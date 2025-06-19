@@ -1,0 +1,30 @@
+# spring.application.name=bms-batch
+spring:
+  application:
+    name: bms-batch
+  profiles:
+    active: local
+  batch:
+    job:
+      enabled: false
+      names: ${job.name:NONE}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+    hikari:
+      jdbc-url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+  batch:
+    jdbc:
+      initialize-schema: embedded
+
+mybatis:
+  type-aliases-package: tmon.bms.batch.domain
+  mapper-locations: classpath:mapper/*.xml

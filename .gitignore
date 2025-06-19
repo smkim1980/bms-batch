@@ -1,0 +1,52 @@
+# ===============================================================
+# Created by Gemini - For IntelliJ, Java, Spring Boot, Maven
+# ===============================================================
+
+# IDE files - IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Build files - Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+release.properties
+dependency-reduced-pom.xml
+.mvn/timing.properties
+
+# Compiled Java class files
+*.class
+
+# Log files
+*.log
+logs/
+
+# Package files
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Runtime files
+hs_err_pid*
+
+# Environment-specific configuration (Keep sensitive data out of git)
+# e.g., application-local.properties for local DB passwords
+application-local.properties
+application-local.yml
+application-local.yaml
+
+# OS-generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
