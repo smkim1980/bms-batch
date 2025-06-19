@@ -1,4 +1,4 @@
-# spring.application.name=bms-batch
+
 spring:
   application:
     name: bms-batch
@@ -8,6 +8,13 @@ spring:
     job:
       enabled: false
       names: ${job.name:NONE}
+
+# ADDED: Batch job related properties
+batch:
+  job:
+    bms-txt-file:
+      input-path: /Users/smkim/intellij/bms_batch/ # ??? ??? ?? ?? ??
+      file-pattern: "*.txt" # ??? ?? ??
 
 ---
 spring:
@@ -23,8 +30,10 @@ spring:
       jdbc-url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
   batch:
     jdbc:
-      initialize-schema: embedded
+      initialize-schema: never
+  main:
+    allow-bean-definition-overriding: true
 
 mybatis:
-  type-aliases-package: tmon.bms.batch.domain
+  type-aliases-package: tmoney.tnz.bmsbatch.domain
   mapper-locations: classpath:mapper/*.xml
