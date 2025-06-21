@@ -53,7 +53,7 @@ public class BmsTxtFileJobTest {
     @DynamicPropertySource
     static void dynamicProperties(DynamicPropertyRegistry registry) {
         // 이 방식이 TestPropertySource보다 더 안정적입니다.
-        registry.add("batch.job.bms-txt-file.input-path", () -> tempDir.toAbsolutePath().toString());
+        registry.add("file.job.file-process.input-path", () -> tempDir.toAbsolutePath().toString());
     }
 
     @BeforeEach

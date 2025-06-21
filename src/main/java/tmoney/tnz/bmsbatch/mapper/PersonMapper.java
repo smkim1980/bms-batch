@@ -1,9 +1,6 @@
 package tmoney.tnz.bmsbatch.mapper;
 
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
 import tmoney.tnz.bmsbatch.domain.Person;
 
 import java.util.List;
