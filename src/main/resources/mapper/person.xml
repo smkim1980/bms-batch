@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tmoney.tnz.bmsbatch.mapper.PersonMapper">
+
+    <insert id="insert" parameterType="tmoney.tnz.bmsbatch.domain.Person">
+        INSERT INTO PERSON (ID, NAME, DATE)
+        VALUES (#{id}, #{name}, #{date})
+    </insert>
+
+    <select id="findAll" resultType="tmoney.tnz.bmsbatch.domain.Person">
+        SELECT * FROM PERSON
+    </select>
+
+    <delete id="deleteAll">
+        DELETE FROM PERSON
+    </delete>
+
+</mapper>
