@@ -6,7 +6,7 @@ spring:
     active: local
   batch:
     job:
-      enabled: false
+      enabled: true
       name: ${job.name:NONE}
 
 # ADDED: Batch job related properties

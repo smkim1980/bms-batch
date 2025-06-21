@@ -20,7 +20,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 @RequiredArgsConstructor
 @Slf4j
 @Configuration
-@EnableBatchProcessing
 public class SampleJobConfig {
 
 
