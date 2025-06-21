@@ -5,11 +5,8 @@ import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
-import org.springframework.core.io.Resource;
-
 import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 public class FileCleanupListener implements StepExecutionListener {
@@ -21,26 +18,25 @@ public class FileCleanupListener implements StepExecutionListener {
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
-        // Step이 성공적으로 완료된 경우에만 파일 삭제
         if (stepExecution.getStatus() == BatchStatus.COMPLETED) {
-            Resource[] processedResources = (Resource[]) stepExecution.getExecutionContext().get("processedResources");
+            // --- 여기부터 수정 ---
+            // ExecutionContext에서 Resource[] 대신 파일 경로의 List<String>을 가져옵니다.
+            @SuppressWarnings("unchecked")
+            List<String> processedResourcePaths = (List<String>) stepExecution.getExecutionContext().get("processedResources");
 
-            if (processedResources != null) {
-                Arrays.stream(processedResources).forEach(resource -> {
-                    try {
-                        File file = resource.getFile();
-                        if (file.delete()) {
-                            log.info("성공적으로 파일을 삭제했습니다: {}", file.getPath());
-                        } else {
-                            log.warn("파일 삭제에 실패했습니다: {}", file.getPath());
-                        }
-                    } catch (IOException e) {
-                        log.error("파일에 접근 중 오류가 발생했습니다: " + resource.getFilename(), e);
+            if (processedResourcePaths != null) {
+                log.info("처리된 파일 {}개를 삭제합니다.", processedResourcePaths.size());
+                processedResourcePaths.forEach(path -> {
+                    File file = new File(path);
+                    if (file.delete()) {
+                        log.info("성공적으로 파일을 삭제했습니다: {}", file.getPath());
+                    } else {
+                        log.warn("파일 삭제에 실패했습니다: {}", file.getPath());
                     }
                 });
             }
+            // --- 여기까지 수정 ---
         }
-        // ExitStatus를 변경하지 않고 그대로 반환
         return stepExecution.getExitStatus();
     }
 }
