@@ -1,4 +1,4 @@
-package tmoney.tnz.bmsbatch.jobs;
+package tmoney.tnz.bmsbatch.jobs.sample;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,10 +27,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.transaction.PlatformTransactionManager;
-import tmoney.tnz.bmsbatch.domain.Person;
+import tmoney.tnz.bmsbatch.domain.SamplePersonDto;
 import tmoney.tnz.bmsbatch.listener.FileCleanupListener;
-import tmoney.tnz.bmsbatch.mapper.PersonMapper;
-import tmoney.tnz.bmsbatch.properties.FileJobProperties; // 1. FileJobProperties 임포트
+import tmoney.tnz.bmsbatch.mapper.SampleMapper;
+import tmoney.tnz.bmsbatch.properties.SampleFileJobProperties; // 1. FileJobProperties 임포트
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -43,11 +43,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class BmsTxtFileJob {
     private final JobRepository jobRepository;
+
     @Qualifier("transactionManager")
     private final PlatformTransactionManager transactionManager;
     private final SqlSessionFactory sqlSessionFactory;
-    private final PersonMapper personMapper;
-    private final FileJobProperties fileJobProperties; // 2. FileJobProperties 주입
+    private final SampleMapper sampleMapper;
+    private final SampleFileJobProperties sampleFileJobProperties; // 2. FileJobProperties 주입
 
     public static final String JOB_NAME = "bmsTxtFile";
 
@@ -64,7 +65,7 @@ public class BmsTxtFileJob {
     @JobScope
     public Step personStep() {
         return new StepBuilder("personStep", jobRepository)
-                .<Person, Person>chunk(10, transactionManager)
+                .<SamplePersonDto, SamplePersonDto>chunk(10, transactionManager)
                 .reader(multiFileReader(null, null)) // 파라미터가 줄어듦
                 .writer(personMyBatisBatchItemWriter())
                 .listener(new FileCleanupListener())
@@ -80,7 +81,7 @@ public class BmsTxtFileJob {
                     log.info("DB 검증 단계 시작: 저장된 데이터를 확인합니다.");
                     log.info("====================================================");
 
-                    List<Person> people = personMapper.findAll();
+                    List<SamplePersonDto> people = sampleMapper.findAll();
 
                     if (people.isEmpty()) {
                         log.info("DB에 저장된 데이터가 없습니다.");
@@ -101,20 +102,20 @@ public class BmsTxtFileJob {
 
     @Bean
     @StepScope
-    public MultiResourceItemReader<Person> multiFileReader(
+    public MultiResourceItemReader<SamplePersonDto> multiFileReader(
             @Value("#{jobParameters['requestDate']}") String requestDate,
             // 3. @Value로 주입받던 inputPath 제거
             @Value("#{stepExecution}") StepExecution stepExecution) {
 
         log.info("Job parameter 'requestDate': {}", requestDate);
         // 4. fileJobProperties 객체에서 설정값 사용
-        log.info("Reading files from path: {}", fileJobProperties.getInputPath());
+        log.info("Reading files from path: {}", sampleFileJobProperties.getInputPath());
 
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         Resource[] resources;
         try {
             // 4. fileJobProperties 객체에서 설정값 사용
-            resources = resolver.getResources("file:" + fileJobProperties.getInputPath() + fileJobProperties.getFilePattern());
+            resources = resolver.getResources("file:" + sampleFileJobProperties.getInputPath() + sampleFileJobProperties.getFilePattern());
         } catch (IOException e) {
             log.error("Failed to find file resources.", e);
             throw new RuntimeException("Failed to find file resources.", e);
@@ -134,7 +135,7 @@ public class BmsTxtFileJob {
 
         stepExecution.getExecutionContext().put("processedResources", resourcePaths);
 
-        return new MultiResourceItemReaderBuilder<Person>()
+        return new MultiResourceItemReaderBuilder<SamplePersonDto>()
                 .name("multiFileReader")
                 .resources(resources)
                 .delegate(flatFileReader())
@@ -143,27 +144,27 @@ public class BmsTxtFileJob {
 
     @Bean
     @StepScope
-    public FlatFileItemReader<Person> flatFileReader() {
-        return new FlatFileItemReaderBuilder<Person>()
+    public FlatFileItemReader<SamplePersonDto> flatFileReader() {
+        return new FlatFileItemReaderBuilder<SamplePersonDto>()
                 .name("flatFileReader")
                 .linesToSkip(0)
                 .delimited()
                 // 5. fileJobProperties 객체에서 설정값 사용
-                .delimiter(fileJobProperties.getDelimiter())
-                .names(fileJobProperties.getNames())
+                .delimiter(sampleFileJobProperties.getDelimiter())
+                .names(sampleFileJobProperties.getNames())
                 .fieldSetMapper(new BeanWrapperFieldSetMapper<>() {{
-                    setTargetType(Person.class);
+                    setTargetType(SamplePersonDto.class);
                 }})
                 .build();
     }
 
     @Bean
     @StepScope
-    public MyBatisBatchItemWriter<Person> personMyBatisBatchItemWriter() {
-        return new MyBatisBatchItemWriterBuilder<Person>()
+    public MyBatisBatchItemWriter<SamplePersonDto> personMyBatisBatchItemWriter() {
+        return new MyBatisBatchItemWriterBuilder<SamplePersonDto>()
                 .sqlSessionFactory(sqlSessionFactory)
                 // 6. fileJobProperties 객체에서 설정값 사용
-                .statementId(fileJobProperties.getWriterStatementId())
+                .statementId(sampleFileJobProperties.getWriterStatementId())
                 .build();
     }
 }

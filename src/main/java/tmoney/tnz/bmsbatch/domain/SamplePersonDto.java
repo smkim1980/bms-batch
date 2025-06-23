@@ -3,7 +3,7 @@ package tmoney.tnz.bmsbatch.domain;
 import lombok.Data;
 
 @Data
-public class Person {
+public class SamplePersonDto {
 
     private Long id;
     private String name;

@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties(prefix = "file.job.file-process")
-public class FileJobProperties {
+@ConfigurationProperties(prefix = "sample.file.job.file-process")
+public class SampleFileJobProperties {
     /**
      * 처리할 파일이 있는 입력 디렉토리 경로
      */

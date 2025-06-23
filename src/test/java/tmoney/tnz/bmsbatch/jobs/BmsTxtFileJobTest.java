@@ -14,13 +14,12 @@ import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import tmoney.tnz.bmsbatch.domain.Person;
-import tmoney.tnz.bmsbatch.mapper.PersonMapper;
+import tmoney.tnz.bmsbatch.domain.SamplePersonDto;
+import tmoney.tnz.bmsbatch.mapper.SampleMapper;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -40,7 +39,7 @@ public class BmsTxtFileJobTest {
     private JobLauncherTestUtils jobLauncherTestUtils;
 
     @Autowired
-    private PersonMapper personMapper;
+    private SampleMapper sampleMapper;
 
     // CHANGED: Job을 직접 주입받아 테스트에서 사용합니다.
     @Autowired
@@ -58,7 +57,7 @@ public class BmsTxtFileJobTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        personMapper.deleteAll(); // 테스트 독립성을 위해 이전 데이터를 삭제합니다.
+        sampleMapper.deleteAll(); // 테스트 독립성을 위해 이전 데이터를 삭제합니다.
 
         File testFile1 = tempDir.resolve("person1.txt").toFile();
         try (FileWriter writer = new FileWriter(testFile1)) {
@@ -89,9 +88,9 @@ public class BmsTxtFileJobTest {
         // then
         assertThat(jobExecution.getStatus()).isEqualTo(BatchStatus.COMPLETED);
 
-        List<Person> people = personMapper.findAll();
+        List<SamplePersonDto> people = sampleMapper.findAll();
         assertThat(people).hasSize(3);
-        assertThat(people).extracting(Person::getName).containsExactlyInAnyOrder("kim", "lee", "park");
+        assertThat(people).extracting(SamplePersonDto::getName).containsExactlyInAnyOrder("kim", "lee", "park");
 
         // 파일 삭제 검증은 FileCleanupListener 로직에 따라 달라지므로,
         // 우선 핵심 기능인 DB 저장까지만 테스트하는 것을 권장합니다.
