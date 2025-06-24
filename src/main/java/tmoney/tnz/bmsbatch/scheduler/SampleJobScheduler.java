@@ -9,19 +9,27 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import tmoney.tnz.bmsbatch.common.enums.JobNames;
 import tmoney.tnz.bmsbatch.config.BatchJobRunner;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
-//@Slf4j
-//@Component
-//@RequiredArgsConstructor
+import static tmoney.tnz.bmsbatch.common.util.JobSchedulerUtil.currentMethodName;
+import static tmoney.tnz.bmsbatch.common.util.JobSchedulerUtil.getJobName;
+
+@Slf4j
+@Component
+@RequiredArgsConstructor
 public class SampleJobScheduler {
 
-//    private final BatchJobRunner batchJobRunner;
-//
+    private final BatchJobRunner batchJobRunner;
+
 //    @Qualifier("sampleJob")
 //    private final Job sampleJob;
+
+    private final Map<String , Job> jobMap;
+
 //
 //    /**
 //     * 매일 새벽 4시 30분에 sampleJob을 실행합니다.
@@ -43,15 +51,15 @@ public class SampleJobScheduler {
 //        batchJobRunner.runJob(sampleJob, "runSampleJobAt515");
 //    }
 
-//    /**
-//     * 10초(10000ms)에 한 번씩 sampleJob을 실행합니다.
-//     * fixedRate: 이전 작업의 시작 시간으로부터 고정된 시간(밀리초)이 지난 후에 실행합니다.
-//     */
-//    @Scheduled(fixedRate = 10000)
-//    public void runJobEvery10Seconds() {
-//        // 공통 러너를 사용하여 Job 실행
-//        batchJobRunner.runJob(sampleJob, "tenSecondJobTrigger");
-//    }
+    /**
+     * 10초(10000ms)에 한 번씩 sampleJob을 실행합니다.
+     * fixedRate: 이전 작업의 시작 시간으로부터 고정된 시간(밀리초)이 지난 후에 실행합니다.
+     */
+    @Scheduled(fixedRate = 10000)
+    public void runJobEvery10Seconds() {
+        // 공통 러너를 사용하여 Job 실행
+       batchJobRunner.runJob(jobMap.get(getJobName(JobNames.SAMPLE_JOB)), currentMethodName());
+    }
 
 //    /**
 //     * 매 시간 정각에 sampleJob을 실행합니다.

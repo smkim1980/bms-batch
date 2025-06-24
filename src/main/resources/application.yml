@@ -5,8 +5,8 @@ spring:
     active: local
   batch:
     job:
-      enabled: true
-      name: ${job.name:NONE}
+      enabled: false
+      # name: ${job.name:}
 
 ---
 spring:
