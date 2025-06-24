@@ -13,35 +13,35 @@ import tmoney.tnz.bmsbatch.config.BatchJobRunner;
 
 import java.time.LocalDateTime;
 
-@Slf4j
-@Component
-@RequiredArgsConstructor
+//@Slf4j
+//@Component
+//@RequiredArgsConstructor
 public class SampleJobScheduler {
 
-    private final BatchJobRunner batchJobRunner;
-
-    @Qualifier("sampleJob")
-    private final Job sampleJob;
-
-    /**
-     * 매일 새벽 4시 30분에 sampleJob을 실행합니다.
-     * Cron Expression: 초 분 시 일 월 요일
-     * "0 30 4 * * ?" = 매일 4시 30분 0초에 실행
-     */
-    @Scheduled(cron = "0 30 4 * * ?")
-    public void runSampleJobAt430() {
-        batchJobRunner.runJob(sampleJob, "runSampleJobAt430");
-    }
-
-    /**
-     * 매일 새벽 5시 15분에 sampleJob을 실행합니다.
-     * Cron Expression: 초 분 시 일 월 요일
-     * "0 15 5 * * ?" = 매일 5시 15분 0초에 실행
-     */
-    @Scheduled(cron = "0 15 5 * * ?")
-    public void runSampleJobAt515() {
-        batchJobRunner.runJob(sampleJob, "runSampleJobAt515");
-    }
+//    private final BatchJobRunner batchJobRunner;
+//
+//    @Qualifier("sampleJob")
+//    private final Job sampleJob;
+//
+//    /**
+//     * 매일 새벽 4시 30분에 sampleJob을 실행합니다.
+//     * Cron Expression: 초 분 시 일 월 요일
+//     * "0 30 4 * * ?" = 매일 4시 30분 0초에 실행
+//     */
+//    @Scheduled(cron = "0 30 4 * * ?")
+//    public void runSampleJobAt430() {
+//        batchJobRunner.runJob(sampleJob, "runSampleJobAt430");
+//    }
+//
+//    /**
+//     * 매일 새벽 5시 15분에 sampleJob을 실행합니다.
+//     * Cron Expression: 초 분 시 일 월 요일
+//     * "0 15 5 * * ?" = 매일 5시 15분 0초에 실행
+//     */
+//    @Scheduled(cron = "0 15 5 * * ?")
+//    public void runSampleJobAt515() {
+//        batchJobRunner.runJob(sampleJob, "runSampleJobAt515");
+//    }
 
 //    /**
 //     * 10초(10000ms)에 한 번씩 sampleJob을 실행합니다.

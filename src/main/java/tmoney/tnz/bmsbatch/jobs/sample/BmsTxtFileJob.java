@@ -30,7 +30,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import tmoney.tnz.bmsbatch.domain.SamplePersonDto;
 import tmoney.tnz.bmsbatch.listener.FileCleanupListener;
 import tmoney.tnz.bmsbatch.mapper.SampleMapper;
-import tmoney.tnz.bmsbatch.properties.SampleFileJobProperties; // 1. FileJobProperties 임포트
+import tmoney.tnz.bmsbatch.properties.FileJobProperties;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -48,7 +48,9 @@ public class BmsTxtFileJob {
     private final PlatformTransactionManager transactionManager;
     private final SqlSessionFactory sqlSessionFactory;
     private final SampleMapper sampleMapper;
-    private final SampleFileJobProperties sampleFileJobProperties; // 2. FileJobProperties 주입
+
+    @Qualifier("sampleFileJobProperties")
+    private final FileJobProperties fileJobProperties; // 2. FileJobProperties 주입
 
     public static final String JOB_NAME = "bmsTxtFile";
 
@@ -109,13 +111,13 @@ public class BmsTxtFileJob {
 
         log.info("Job parameter 'requestDate': {}", requestDate);
         // 4. fileJobProperties 객체에서 설정값 사용
-        log.info("Reading files from path: {}", sampleFileJobProperties.getInputPath());
+        log.info("Reading files from path: {}", fileJobProperties.getInputPath());
 
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         Resource[] resources;
         try {
             // 4. fileJobProperties 객체에서 설정값 사용
-            resources = resolver.getResources("file:" + sampleFileJobProperties.getInputPath() + sampleFileJobProperties.getFilePattern());
+            resources = resolver.getResources("file:" + fileJobProperties.getInputPath() + fileJobProperties.getFilePattern());
         } catch (IOException e) {
             log.error("Failed to find file resources.", e);
             throw new RuntimeException("Failed to find file resources.", e);
@@ -150,8 +152,8 @@ public class BmsTxtFileJob {
                 .linesToSkip(0)
                 .delimited()
                 // 5. fileJobProperties 객체에서 설정값 사용
-                .delimiter(sampleFileJobProperties.getDelimiter())
-                .names(sampleFileJobProperties.getNames())
+                .delimiter(fileJobProperties.getDelimiter())
+                .names(fileJobProperties.getNames())
                 .fieldSetMapper(new BeanWrapperFieldSetMapper<>() {{
                     setTargetType(SamplePersonDto.class);
                 }})
@@ -164,7 +166,7 @@ public class BmsTxtFileJob {
         return new MyBatisBatchItemWriterBuilder<SamplePersonDto>()
                 .sqlSessionFactory(sqlSessionFactory)
                 // 6. fileJobProperties 객체에서 설정값 사용
-                .statementId(sampleFileJobProperties.getWriterStatementId())
+                .statementId(fileJobProperties.getWriterStatementId())
                 .build();
     }
 }
