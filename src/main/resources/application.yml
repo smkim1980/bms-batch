@@ -1,4 +1,9 @@
 spring:
+  config:
+    import:
+        - classpath:yaml/local/application-local.yml
+        - classpath:yaml/dev/application-dev.yml
+        - classpath:yaml/prod/application-prod.yml
   application:
     name: bms-batch
   profiles:
@@ -7,30 +12,3 @@ spring:
     job:
       enabled: false
       # name: ${job.name:}
-
----
-spring:
-  config:
-    activate:
-      on-profile: local
-  datasource:
-    hikari:
-      jdbc-url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-      username: sa
-      password:
-      driver-class-name: org.h2.Driver
-  batch:
-    jdbc:
-      initialize-schema: never
-  main:
-    allow-bean-definition-overriding: true
-
-sample:
-  file:
-    job:
-      file-process:
-        input-path: C:/dev/file/ #/Users/smkim/intellij/bms_batch/ # 처리할 파일이 있는 디렉토리
-        file-pattern: "*.txt"                        # 처리할 파일 패턴 (txt, csv 등)
-        delimiter: ","                               # 파일 구분자
-        names: id,name,date                          # 매핑할 필드명
-        writer-statement-id: tmoney.tnz.bmsbatch.mapper.SampleMapper.insert # MyBatis 매퍼 ID
