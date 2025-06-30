@@ -1,63 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <!-- 로그 패턴에 색상 적용 %clr(pattern){color}
-        https://logback.qos.ch/manual/layouts.html#coloring
-    -->
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
 
-<!--    <springProfile name="local">-->
-<!--        <property resource="classpath:yaml/log/application-local-log.yml" />-->
-<!--    </springProfile>-->
-<!--    <springProfile name="dev, prod">-->
-<!--        <property resource="classpath:yaml/log/application-log.yml" />-->
-<!--    </springProfile>-->
-
-    <!-- log 변수 값 설정 -->
-    <springProperty name="LOG_PATH" source= "log.config.path" />
-    <springProperty name="LOG_FILE_NAME" source= "log.config.filename" />
-    <springProperty name="LOG_MAX_HISTORY" source= "log.config.maxHistory" />
-    <springProperty name="LOG_TOTAL_SIZE_CAP" source= "log.config.totalSizeCap" />
+    <springProperty name="LOG_PATH" source="log.config.path" />
+    <springProperty name="LOG_MAX_HISTORY" source="log.config.maxHistory" />
+    <springProperty name="LOG_TOTAL_SIZE_CAP" source="log.config.totalSizeCap" />
 
     <property name="CONSOLE_LOG_PATTERN"
               value="[%d{yyyy-MM-dd HH:mm:ss}:%-3relative]  %clr(%-5level) %clr(${PID:-}){magenta} %clr(---){faint} %clr([%15.15thread]){faint} %clr(%-40.40logger{36}){cyan} %clr(:){faint} %msg%n"/>
     <property name="FILE_LOG_PATTERN"
               value="[%d{yyyy-MM-dd HH:mm:ss}:%-3relative] %-5level ${PID:-} --- [%15.15thread] %-40.40logger{36} : %msg%n"/>
 
-    <!-- 콘솔(STDOUT) -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
         </layout>
     </appender>
 
-    <!-- 파일(FILE) -->
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <!--     log 기록할 파일 위치 설정 -->
-        <file>${LOG_PATH}/${LOG_FILE_NAME}.log</file>
-        <!--     log 기록 타입 인코딩 -->
-        <encoder>
-            <pattern>${FILE_LOG_PATTERN}</pattern>
-        </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- daily rollover -->
-            <fileNamePattern>${LOG_PATH}/bak/${LOG_FILE_NAME}.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <!-- keep 30 days' worth of history capped at 3GB total size -->
-            <maxHistory>${LOG_MAX_HISTORY}</maxHistory>
-            <totalSizeCap>${LOG_TOTAL_SIZE_CAP}</totalSizeCap>
-        </rollingPolicy>
+    <appender name="SIFT" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <discriminator class="ch.qos.logback.classic.sift.MDCBasedDiscriminator">
+            <key>jobName</key>
+            <defaultValue>bms-application</defaultValue>
+        </discriminator>
+
+        <sift>
+            <appender name="FILE-${jobName}" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>${LOG_PATH}/${jobName}.log</file> <encoder>
+                <pattern>${FILE_LOG_PATTERN}</pattern>
+            </encoder>
+                <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                    <fileNamePattern>${LOG_PATH}/bak/${jobName}.%d{yyyy-MM-dd}.log</fileNamePattern>
+                    <maxHistory>${LOG_MAX_HISTORY}</maxHistory>
+                    <totalSizeCap>${LOG_TOTAL_SIZE_CAP}</totalSizeCap>
+                </rollingPolicy>
+            </appender>
+        </sift>
     </appender>
 
-    <!-- 비동기 파일(FILE)
-      includeCallerData: 비동기 로깅에서도 Method Name 및 Line Number 등 위치 정보를 출력하게 해주는 옵션
-      queueSize: 기본값은 256, Log4j2와 동일하게 1024로 설정
-      neverBlock: false(기본값)면 로그 발생시 Queue에 넣을 공간이 없으면 빈 공간이 생길 때 까지 블락킹 상태로 기다리며, 로그를 유실하지 않는다.
-      discardingThreshold: Queue에 남은 용량이 {해당 설정값 n}%이하가 되면, WARN 미만 로그가 유실되기 시작한다.
-                    - 기본 값은 20이며, Queue 남은 용량이 20%이하가 되면 로그 유실이 발생한다.
-                    - 0으로 세팅하면 Queue에 쌓인 로그를 드랍하지 않는다.
-    -->
     <appender name="FILE-ASYNC" class="ch.qos.logback.classic.AsyncAppender">
-        <appender-ref ref="FILE" />
-        <includeCallerData>false</includeCallerData>
+        <appender-ref ref="SIFT" /> <includeCallerData>false</includeCallerData>
         <discardingThreshold>0</discardingThreshold>
         <queueSize>1024</queueSize>
         <neverBlock>true</neverBlock>
@@ -72,31 +53,27 @@
     <logger name="jdbc.resultsettable" level="OFF"/>
     <logger name="jdbc.connection" level="OFF"/>
 
-    <!-- spring profile별 로그 설정 -->
-    <!--  local 환경  -->
     <springProfile name="local">
         <root level="debug">
-            <!--     참조할 appender - STDOUT -->
             <appender-ref ref="STDOUT" />
         </root>
         <logger name="tmoney.tnz.bmsbatch" level="debug">
-            <!--     참조할 appender - FILE -->
-            <!--                <appender-ref ref="FILE" /> &lt;!&ndash; 7.8/s &ndash;&gt;-->
-            <appender-ref ref="FILE-ASYNC" /><!-- 125 ms-->
+            <appender-ref ref="FILE-ASYNC" />
         </logger>
     </springProfile>
-    <!--  dev 환경  -->
     <springProfile name="dev">
+        <root level="info">
+            <appender-ref ref="STDOUT" />
+        </root>
         <logger name="tmoney.tnz.bmsbatch" level="debug">
-            <!--     참조할 appender - FILE -->
-            <!--                <appender-ref ref="FILE" /> &lt;!&ndash; 7.8/s &ndash;&gt;-->
-            <appender-ref ref="FILE-ASYNC" /><!-- 125 ms-->
+            <appender-ref ref="FILE-ASYNC" />
         </logger>
     </springProfile>
-    <!--  real 환경  -->
     <springProfile name="prod">
-        <logger name="tmoney.tnz.bmsbatch" level="debug">
-            <!--     참조할 appender - FILE -->
+        <root level="info">
+            <appender-ref ref="STDOUT" />
+        </root>
+        <logger name="tmoney.tnz.bmsbatch" level="info">
             <appender-ref ref="FILE-ASYNC" />
         </logger>
     </springProfile>

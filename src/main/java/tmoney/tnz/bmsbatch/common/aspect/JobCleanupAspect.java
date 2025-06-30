@@ -18,6 +18,8 @@ public class JobCleanupAspect {
 
     private final BatchMetaTableCleanupService cleanupService;
 
+
+
     // JobLauncher.run 메소드가 성공적으로 JobExecution 객체를 반환한 후에 이 로직을 실행합니다.
     @AfterReturning(
             pointcut = "execution(* org.springframework.batch.core.launch.JobLauncher.run(..))",
