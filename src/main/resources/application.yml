@@ -1,9 +1,9 @@
 spring:
   config:
     import:
-        - classpath:yaml/local/application-local.yml
-        - classpath:yaml/dev/application-dev.yml
-        - classpath:yaml/prod/application-prod.yml
+        - classpath:yaml/application-local.yml
+        - classpath:yaml/application-dev.yml
+        - classpath:yaml/application-prod.yml
   application:
     name: bms-batch
   profiles:

@@ -1,6 +1,6 @@
 log:
   config:
     path: ./logs
-    filename: app-release
+    filename: bms-batch
     maxHistory: 30
     totalSizeCap: 1GB # 로그 파일 사이즈

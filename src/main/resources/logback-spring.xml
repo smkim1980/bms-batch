@@ -57,7 +57,7 @@
         <root level="debug">
             <appender-ref ref="STDOUT" />
         </root>
-        <logger name="tmoney.tnz.bmsbatch" level="debug">
+        <logger name="tmoney.gbi.bmsbatch" level="debug">
             <appender-ref ref="FILE-ASYNC" />
         </logger>
     </springProfile>
@@ -65,7 +65,7 @@
         <root level="info">
             <appender-ref ref="STDOUT" />
         </root>
-        <logger name="tmoney.tnz.bmsbatch" level="debug">
+        <logger name="tmoney.gbi.bmsbatch" level="debug">
             <appender-ref ref="FILE-ASYNC" />
         </logger>
     </springProfile>
@@ -73,7 +73,7 @@
         <root level="info">
             <appender-ref ref="STDOUT" />
         </root>
-        <logger name="tmoney.tnz.bmsbatch" level="info">
+        <logger name="tmoney.gbi.bmsbatch" level="info">
             <appender-ref ref="FILE-ASYNC" />
         </logger>
     </springProfile>

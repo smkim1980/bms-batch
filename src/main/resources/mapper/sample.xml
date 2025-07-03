@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="tmoney.tnz.bmsbatch.mapper.SampleMapper">
+<mapper namespace="tmoney.gbi.bmsbatch.mapper.SampleMapper">
 
-    <insert id="insert" parameterType="tmoney.tnz.bmsbatch.domain.SamplePersonDto">
+    <insert id="insert" parameterType="tmoney.gbi.bmsbatch.domain.SamplePersonDto">
         INSERT INTO PERSON (ID, NAME, DATE)
         VALUES (#{id}, #{name}, #{date})
     </insert>
 
-    <select id="findAll" resultType="tmoney.tnz.bmsbatch.domain.SamplePersonDto">
+    <select id="findAll" resultType="tmoney.gbi.bmsbatch.domain.SamplePersonDto">
         SELECT * FROM PERSON
     </select>
 
